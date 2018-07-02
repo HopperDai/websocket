@@ -8,6 +8,12 @@
 
 - 浏览器和服务器的通信采用 http 协议，websocket 协议是基于 http 的
 
+## package.json
+
+- 存依赖 `npm i socket.io -D` (-D:开发依赖)
+
+- 在 `scripts` 中定义运行命令
+
 ## 库
 
 - socket.io node、前台
@@ -46,3 +52,17 @@
     - socket.emit('消息名字',参数...); 发送
 
     - socket.on('消息名字',function(参数...){}) 接收
+
+### demo 案例功能
+
+- 用户注册、登录
+
+- 发言 -> 其他人
+
+- 离线消息
+
+#### 数据 -> 数据库
+
+- 用户账号数据
+
+- 消息数据
