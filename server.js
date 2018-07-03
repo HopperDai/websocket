@@ -3,6 +3,7 @@ const mysql = require('mysql');
 const fs = require('fs');
 const io = require('socket.io');
 const url = require('url');
+const regs = require('./libs/regs');
 
 const port = 8080;
 
@@ -28,9 +29,8 @@ const httpServer = http.createServer((req, res) => {
         } = query;
 
         // 重要（安全性）：校验数据是否符合规范
-        const nameReg = /^\w{6,32}$/;
-        const passwordReg = /^.{6,32}$/;
-        if (!nameReg.test(username)) {
+
+        if (!regs.username.test(username)) {
             console.log('用户名不符合规范');
 
             res.write(JSON.stringify({
@@ -38,7 +38,7 @@ const httpServer = http.createServer((req, res) => {
                 msg: '用户名不符合规范'
             })); // write 的参数只能是 string 或 buffer
             res.end();
-        } else if (!passwordReg.test(password)) {
+        } else if (!regs.password.test(password)) {
             console.log('密码不符合规范');
 
             res.write(JSON.stringify({
