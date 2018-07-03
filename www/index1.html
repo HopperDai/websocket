@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>websocket</title>
+
+    <script src="http://localhost:8080/socket.io/socket.io.js"></script>
+    <script src="./js/lib/jquery.min.js"></script>
+
+    <script>
+        $(() => {
+            const sock = io.connect('ws://localhost:8080/');
+
+            sock.on('reg_ret', (code, msg) => {
+                if (code) {
+                    console.log('注册失败', msg);
+                } else {
+                    console.log('注册成功');
+                }
+            });
+
+            $('#reg').on('click', () => {
+                sock.emit('reg', $('#username').val(), $('#password').val());
+            })
+        });
+    </script>
+</head>
+
+<body>
+    用户名：
+    <input type="text" id="username">
+    <br/> 密码：
+    <input type="password" id="password">
+    <br/>
+    <input type="button" id="reg" value="注册">&nbsp;
+    <input type="button" id="login" value="登录">
+</body>
+
+</html>

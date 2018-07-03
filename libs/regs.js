@@ -1,4 +1,4 @@
 module.exports = {
-    username: /^\w{6,32}$/,
+    username: /^\w{3,32}$/,
     password: /^.{6,32}$/
 }

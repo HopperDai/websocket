@@ -11,6 +11,7 @@
 
     <script>
         $(() => {
+            // 注册
             $('#reg').on('click', () => {
                 $.ajax({
                     url: 'http://localhost:8080/reg',
@@ -35,6 +36,31 @@
                     }
                 });
             });
+
+            // 登录
+            $('#login').on('click', () => {
+                $.ajax({
+                    url: 'http://localhost:8080/login',
+                    dataType: 'json',
+                    data: {
+                        username: $('#username').val(),
+                        password: $('#password').val()
+                    },
+                    success({
+                        code,
+                        msg
+                    }) {
+                        if (code) {
+                            console.log('登录失败', msg);
+                        } else {
+                            console.log('登录成功');
+                        }
+                    },
+                    error(err) {
+                        console.log('登录失败，网络连接失败')
+                    }
+                })
+            });
         });
     </script>
 </head>
@@ -45,7 +71,8 @@
     <br/> 密码：
     <input type="password" id="password">
     <br/>
-    <input type="button" id="reg" value="注册">
+    <input type="button" id="reg" value="注册">&nbsp;
+    <input type="button" id="login" value="登录">
 </body>
 
 </html>
