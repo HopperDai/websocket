@@ -1,4 +1,16 @@
-# websocket
+# websocket 数据交互
+
+1.  性能高
+
+2.  双向 - 数据实时性高
+
+3.  HTML5 IE9+
+
+4.  socket.io
+
+    - 兼容
+
+    - 传输二进制数据
 
 - 双工
 
@@ -46,3 +58,5 @@
     - socket.emit('消息名字',参数...); 发送
 
     - socket.on('消息名字',function(参数...){}) 接收
+
+
