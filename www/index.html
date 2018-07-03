@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>websocket</title>
+
+    <script src="./js/lib/jquery.min.js"></script>
+
+    <script>
+        $(() => {
+            $('#reg').on('click', () => {
+                $.ajax({
+                    url: 'http://localhost:8080/reg',
+                    dataType: 'json',
+                    data: {
+                        username: $('#username').val(),
+                        password: $('#password').val()
+                    },
+                    success({
+                        code,
+                        msg
+                    }) {
+                        if (code) {
+                            console.log('注册失败', msg);
+                        } else {
+                            console.log('注册成功');
+                        }
+                    },
+                    error(err) {
+                        // 通信错误
+                        console.log('注册失败，网络连接失败');
+                    }
+                });
+            });
+        });
+    </script>
+</head>
+
+<body>
+    用户名：
+    <input type="text" id="username">
+    <br/> 密码：
+    <input type="password" id="password">
+    <br/>
+    <input type="button" id="reg" value="注册">
+</body>
+
+</html>
