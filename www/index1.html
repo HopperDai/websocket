@@ -21,8 +21,6 @@
             const sock = io.connect('ws://localhost:8080/');
             let cur_name = '';
 
-            console.log($('div'));
-
             sock.on('reg_ret', (code, msg) => {
                 if (code) {
                     console.log('注册失败', msg);

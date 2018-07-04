@@ -143,12 +143,14 @@ wsServer.on('connection', sock => { // 每个连接都是一个独立空间，�
             // 返回消息发送结果
             sock.emit('msg_ret', 0, '发送成功');
 
-            // 广播消息
+            // 广播消息（原生实现方式）
             aSock.forEach(item => {
                 if (item != sock) { // 给其他用户推送消息
                     item.emit('msg', cur_username, txt);
                 }
             });
+
+            // sock.broadcast.emit('msg', cur_username, txt);  // sock.io 广播
         } else {
             console.log('文本数据为空');
 
