@@ -133,7 +133,7 @@ wsServer.on('connection', sock => { // 每个连接都是一个独立空间，�
         }
     });
 
-    // 客户端离线 disconnect
+    // 客户端离线 -> 监听离线事件：disconnect
     sock.on('disconnect', () => {
         // 修改在线状态
         db.query(`UPDATE user_table SET online=0 WHERE ID=${cur_id}`, (err, data) => {
