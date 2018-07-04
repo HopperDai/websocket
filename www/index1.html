@@ -22,8 +22,20 @@
                 }
             });
 
+            sock.on('login_ret', (code, msg) => {
+                if (code) {
+                    console.log('登录失败', msg);
+                } else {
+                    console.log('登录成功');
+                }
+            });
+
             $('#reg').on('click', () => {
                 sock.emit('reg', $('#username').val(), $('#password').val());
+            });
+
+            $('#login').on('click', () => {
+                sock.emit('login', $('#username').val(), $('#password').val());
             })
         });
     </script>

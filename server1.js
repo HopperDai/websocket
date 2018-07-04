@@ -32,7 +32,10 @@ httpServer.listen(port);
 
 // ws 服务
 const wsServer = io.listen(httpServer);
-wsServer.on('connection', sock => {
+wsServer.on('connection', sock => { // 每个连接都是一个独立空间，类似闭包
+    // 存一下用户信息
+    let cur_username = '';
+    let cur_id = 0;
 
     // 校验数据
     const validate = (ret_name, username, password) => {
@@ -89,6 +92,58 @@ wsServer.on('connection', sock => {
     });
 
     // 登录
+    sock.on('login', (username, password) => {
+        if (validate('login_ret', username, password)) {
+            db.query(`SELECT ID,password FROM user_table WHERE username='${username}'`, (err, data) => {
+                if (err) {
+                    console.log('数据库 SELECT 错误', err);
+                    sock.emit('login_ret', 1, '数据库错误');
+                } else {
+
+                    // 1. 用户是否存在
+                    if (data.length) {
+                        // 2. 密码是否正确
+                        if (data[0].password == password) {
+                            db.query(`UPDATE user_table SET online=1 WHERE ID=${data[0].ID}`, (err) => {
+                                if (err) {
+                                    console.log('数据库 UPDATE 错误', err);
+
+                                    sock.emit('login_ret', 1, '数据库错误');
+                                } else {
+                                    cur_username = username;
+                                    cur_id = data[0].ID;
+
+                                    sock.emit('login_ret', 0, '登录成功');
+                                }
+                            })
+                        } else {
+                            console.log('密码错误');
+                            sock.emit('login_ret', 1, '密码错误');
+                        }
+                    } else {
+                        console.log('用户不存在');
+
+                        sock.emit('login_ret', 1, '用户不存在');
+                    }
+
+                }
+            })
+
+            // 3. 修改在线状态
+        }
+    });
+
+    // 客户端离线 disconnect
+    sock.on('disconnect', () => {
+        // 修改在线状态
+        db.query(`UPDATE user_table SET online=0 WHERE ID=${cur_id}`, (err, data) => {
+            cur_username = '';
+            cur_id = 0;
+            if (err) {
+                console.log('数据库 UPDATE 错误', err); // 客户端已离线，不需要返回
+            }
+        });
+    });
 });
 
 
