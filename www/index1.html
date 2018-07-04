@@ -7,12 +7,21 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>websocket</title>
 
+    <style>
+        .mine {
+            background: green;
+        }
+    </style>
+
     <script src="http://localhost:8080/socket.io/socket.io.js"></script>
     <script src="./js/lib/jquery.min.js"></script>
 
     <script>
         $(() => {
             const sock = io.connect('ws://localhost:8080/');
+            let cur_name = '';
+
+            console.log($('div'));
 
             sock.on('reg_ret', (code, msg) => {
                 if (code) {
@@ -26,8 +35,36 @@
                 if (code) {
                     console.log('登录失败', msg);
                 } else {
+                    cur_name = $('#username').val();
                     console.log('登录成功');
                 }
+            });
+
+            sock.on('msg_ret', (code, msg) => {
+                if (code) {
+                    console.log('消息发送失败', msg);
+                } else {
+                    console.log('消息发送成功');
+
+                    const txt = $('#txt').val();
+                    $('#msg-box').append($(
+                        `<li class='mine'>
+                        <h4>${cur_name}</h4>
+                        <p>${txt}</p> 
+                        </li>`
+                    ));
+                    $('#txt').val('');
+                }
+            });
+
+            // 接收消息
+            sock.on('msg', (name, msg) => {
+                $('#msg-box').append($(
+                    `<li>
+                        <h4>${name}</h4>
+                        <p>${msg}</p> 
+                        </li>`
+                ));
             });
 
             $('#reg').on('click', () => {
@@ -36,6 +73,10 @@
 
             $('#login').on('click', () => {
                 sock.emit('login', $('#username').val(), $('#password').val());
+            });
+
+            $('#send').on('click', () => {
+                sock.emit('msg', $('#txt').val());
             })
         });
     </script>
@@ -49,6 +90,13 @@
     <br/>
     <input type="button" id="reg" value="注册">&nbsp;
     <input type="button" id="login" value="登录">
+    <hr>
+    <textarea name="消息文本" id="txt" cols="100" rows="10"></textarea>
+    <input type="button" id="send" value="发送">
+
+    <ul id="msg-box">
+
+    </ul>
 </body>
 
 </html>

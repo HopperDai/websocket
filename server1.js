@@ -32,6 +32,8 @@ httpServer.listen(port);
 
 // ws 服务
 const wsServer = io.listen(httpServer);
+let aSock = []; // 已登录用户
+
 wsServer.on('connection', sock => { // 每个连接都是一个独立空间，类似闭包
     // 存一下用户信息
     let cur_username = '';
@@ -112,6 +114,7 @@ wsServer.on('connection', sock => { // 每个连接都是一个独立空间，�
                                 } else {
                                     cur_username = username;
                                     cur_id = data[0].ID;
+                                    aSock.push(sock);
 
                                     sock.emit('login_ret', 0, '登录成功');
                                 }
@@ -133,6 +136,26 @@ wsServer.on('connection', sock => { // 每个连接都是一个独立空间，�
         }
     });
 
+    // 消息发送
+    sock.on('msg', txt => {
+        // 校验数据
+        if (txt) {
+            // 返回消息发送结果
+            sock.emit('msg_ret', 0, '发送成功');
+
+            // 广播消息
+            aSock.forEach(item => {
+                if (item != sock) { // 给其他用户推送消息
+                    item.emit('msg', cur_username, txt);
+                }
+            });
+        } else {
+            console.log('文本数据为空');
+
+            sock.emit('msg_ret', 1, '消息不能为空');
+        }
+    })
+
     // 客户端离线 -> 监听离线事件：disconnect
     sock.on('disconnect', () => {
         // 修改在线状态
@@ -142,6 +165,8 @@ wsServer.on('connection', sock => { // 每个连接都是一个独立空间，�
             if (err) {
                 console.log('数据库 UPDATE 错误', err); // 客户端已离线，不需要返回
             }
+
+            aSock = aSock.filter(item => item != sock); // 离线时移除用户
         });
     });
 });
@@ -151,4 +176,6 @@ wsServer.on('connection', sock => { // 每个连接都是一个独立空间，�
     ws 接口
     'reg',username,password  ->  'reg_ret',code,msg
     'login',username,password  ->  'login_ret',code,msg
+    'msg',txt   ->  'msg_ret',code,msg (返回给自己)
+                ->  'msg',name,msg (广播消息)
 */
